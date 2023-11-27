@@ -34,6 +34,9 @@ void excluir_conta (Conta contas [],int &qtd);
 void mostra_contas (Conta contas [],int qtd);
 void mostraTodas (Conta contas [],int qtd);
 void consultaSaldo (Conta contas [], int qtd);
+void realizar_deposito(Conta contas[], int qtd);
+void realizar_saque(Conta contas[], int qtd);
+void transferir_valores(Conta contas[], int qtd);
 
 ////////////////////////////////////////////////////////
 
@@ -73,12 +76,15 @@ int main (){
                 break;
             case 5:
                 //Deposito
+                realizar_deposito(contas, qtd);
                 break;
             case 6:
                 //Realizar saque
+                realizar_saque(contas, qtd);
                 break;
             case 7:
                 //Transferir Valores
+                transferir_valores(contas, qtd);
                 break;
             case 8:
                 // mostra todas as contas
@@ -417,3 +423,207 @@ void consultaSaldo (Conta contas [], int qtd){
 
     system ("pause");
 }
+
+void realizar_deposito(Conta contas[], int qtd) {
+    system("cls");
+    system("color e");
+
+    cout << "-------------------------------------------" << endl;
+    cout << "| ------------ DEPÓSITO ------------------ |" << endl;
+    cout << "-------------------------------------------" << endl << endl;
+
+    char conta[50];
+    char agencia[50];
+    float valor;
+
+    cout << "--> Digite o número da conta corrente: ";
+    cin >> conta;
+    cout << "--> Digite o número da agência: ";
+    cin >> agencia;
+
+    int indiceConta = Buscador(contas, qtd, 1, conta);
+    int indiceAgencia = Buscador(contas, qtd, 2, agencia);
+
+    if (indiceConta == -1 || indiceAgencia == -1) {
+        system("color 4");
+        cout << "\n";
+        cout << "Conta ou agência não encontradas." << endl;
+        cout << "Por favor, verifique os dados informados." << endl;
+        system("pause");
+    } else {
+    	
+        cout << "\n";
+        cout << "------------------------ DADOS DA CONTA ------------------------" << endl;
+        cout << "Número da Conta: " << contas[indiceConta].num_conta << endl;
+        cout << "Número da Agência: " << contas[indiceAgencia].num_agencia << endl;
+        cout << "Nome do titular: " << contas[indiceConta].nome << endl;
+        cout << "CPF do titular: " << contas[indiceAgencia].CPF << endl;
+        cout << "Saldo atual: R$ " << contas[indiceConta].saldo << endl << endl;
+
+        cout << "--> Informe o valor a ser depositado: R$ ";
+        cin >> valor;
+
+        if (valor <= 0) {
+            system("color 4");
+            cout << "\n";
+            cout << "Valor inválido! O valor deve ser positivo." << endl;
+            system("pause");
+        } else {
+            contas[indiceConta].saldo += valor;
+
+            system("color 2");
+            cout << "\n";
+            cout << "--> Depósito de R$ " << valor << " realizado com sucesso!" << endl;
+            cout << "--> Novo saldo: R$ " << contas[indiceConta].saldo << endl;
+            
+            system("pause");
+        }
+    }
+}
+
+void realizar_saque(Conta contas[], int qtd) {
+    system("cls");
+    system("color e");
+
+    cout << "-------------------------------------------" << endl;
+    cout << "| ------------ REALIZAR SAQUE ------------ |" << endl;
+    cout << "-------------------------------------------" << endl << endl;
+
+    char conta[50];
+    char agencia[50];
+    float valor;
+
+    cout << "--> Digite o número da conta corrente: ";
+    cin >> conta;
+    cout << "--> Digite o número da agência: ";
+    cin >> agencia;
+
+    int indiceConta = Buscador(contas, qtd, 1, conta);
+    int indiceAgencia = Buscador(contas, qtd, 2, agencia);
+
+    if (indiceConta == -1 || indiceAgencia == -1) {
+        system("color 4");
+        cout << "\n";
+        cout << "Conta ou agência não encontradas." << endl;
+        cout << "Por favor, verifique os dados informados." << endl;
+        system("pause");
+    } else {
+    	
+        cout << "\n";
+        cout << "------------------------ DADOS DA CONTA ------------------------" << endl;
+        cout << "Número da Conta: " << contas[indiceConta].num_conta << endl;
+        cout << "Número da Agência: " << contas[indiceAgencia].num_agencia << endl;
+        cout << "Nome do titular: " << contas[indiceConta].nome << endl;
+        cout << "CPF do titular: " << contas[indiceAgencia].CPF << endl;
+        cout << "Saldo atual: R$ " << contas[indiceConta].saldo << endl << endl;
+
+        cout << "--> Informe o valor a ser sacado: R$ ";
+        cin >> valor;
+
+        if (valor <= 0) {
+            system("color 4");
+            cout << "\n";
+            cout << "Valor inválido! O valor deve ser positivo." << endl;
+            system("pause");
+        } else if (valor > contas[indiceConta].saldo) {
+            system("color 4");
+            cout << "\n";
+            cout << "Saldo insuficiente para realizar o saque." << endl;
+            system("pause");
+        } else {
+            contas[indiceConta].saldo -= valor;
+
+            system("color 2");
+            cout << "\n";
+            cout << "--> Saque de R$ " << valor << " realizado com sucesso!" << endl;
+            cout << "--> Novo saldo: R$ " << contas[indiceConta].saldo << endl;
+            system("pause");
+        }
+    }
+}
+void transferir_valores(Conta contas[], int qtd) {
+    system("cls");
+    system("color e");
+
+    cout << "-------------------------------------------" << endl;
+    cout << "| -------- TRANSFERIR VALORES ------------ |" << endl;
+    cout << "-------------------------------------------" << endl << endl;
+
+    char contaOrigem[50];
+    char agenciaOrigem[50];
+    char contaDestino[50];
+    char agenciaDestino[50];
+    float valor;
+
+
+    cout << "--> Digite o número da conta de origem: ";
+    cin >> contaOrigem;
+    cout << "--> Digite o número da agência de origem: ";
+    cin >> agenciaOrigem;
+
+    int indiceContaOrigem = Buscador(contas, qtd, 1, contaOrigem);
+    int indiceAgenciaOrigem = Buscador(contas, qtd, 2, agenciaOrigem);
+
+   
+    cout << "--> Digite o número da conta de destino: ";
+    cin >> contaDestino;
+    cout << "--> Digite o número da agência de destino: ";
+    cin >> agenciaDestino;
+
+    int indiceContaDestino = Buscador(contas, qtd, 1, contaDestino);
+    int indiceAgenciaDestino = Buscador(contas, qtd, 2, agenciaDestino);
+
+    if (indiceContaOrigem == -1 || indiceAgenciaOrigem == -1 || indiceContaDestino == -1 || indiceAgenciaDestino == -1) {
+        system("color 4");
+        cout << "\n";
+        cout << "Conta de origem ou destino não encontrada." << endl;
+        cout << "Por favor, verifique os dados informados." << endl;
+        system("pause");
+    } else {
+       
+        cout << "\n";
+        cout << "------------------- DADOS DA CONTA DE ORIGEM -------------------" << endl;
+        cout << "Número da Conta: " << contas[indiceContaOrigem].num_conta << endl;
+        cout << "Número da Agência: " << contas[indiceAgenciaOrigem].num_agencia << endl;
+        cout << "Nome do titular: " << contas[indiceContaOrigem].nome << endl;
+        cout << "CPF do titular: " << contas[indiceAgenciaOrigem].CPF << endl;
+        cout << "Saldo atual: R$ " << contas[indiceContaOrigem].saldo << endl << endl;
+
+        cout << "------------------- DADOS DA CONTA DE DESTINO -------------------" << endl;
+        cout << "Número da Conta: " << contas[indiceContaDestino].num_conta << endl;
+        cout << "Número da Agência: " << contas[indiceAgenciaDestino].num_agencia << endl;
+        cout << "Nome do titular: " << contas[indiceContaDestino].nome << endl;
+        cout << "CPF do titular: " << contas[indiceAgenciaDestino].CPF << endl;
+        cout << "Saldo atual: R$ " << contas[indiceContaDestino].saldo << endl << endl;
+
+        cout << "--> Informe o valor a ser transferido: R$ ";
+        cin >> valor;
+
+        if (valor <= 0) {
+            system("color 4");
+            cout << "\n";
+            cout << "Valor inválido! O valor deve ser positivo." << endl;
+            system("pause");
+        } else if (valor > contas[indiceContaOrigem].saldo) {
+            system("color 4");
+            cout << "\n";
+            cout << "Saldo insuficiente para realizar a transferência." << endl;
+            system("pause");
+        } else {
+    
+            contas[indiceContaOrigem].saldo -= valor;
+            contas[indiceContaDestino].saldo += valor;
+
+            system("color 2");
+            cout << "\n";
+            cout << "--> Transferência de R$ " << valor << " realizada com sucesso!" << endl;
+            cout << "--> Novo saldo da conta de origem: R$ " << contas[indiceContaOrigem].saldo << endl;
+            cout << "--> Novo saldo da conta de destino: R$ " << contas[indiceContaDestino].saldo << endl;
+            
+		
+			system("pause");
+        }
+    }
+}
+
+

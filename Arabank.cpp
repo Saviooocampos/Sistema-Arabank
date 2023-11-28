@@ -2,6 +2,7 @@
 #include <locale>
 #include <fstream>
 #include <string.h>
+#include <ctime>
 
 using namespace std;
 
@@ -12,12 +13,22 @@ const int QTD_MAX = 50;
 ///// Structs ///                   
 ///////////////////////////
 
+struct Transacao {
+    char tipo[35];
+    float valor;
+    char data[20];
+    char hora[20];
+    float saldo_momento;
+};
+
 struct Conta {
     char num_conta [10];
     char num_agencia [10];
     char nome [50];
     char CPF [12];
     float saldo;
+    Transacao extrato[50];
+    int qtd_transacoes = 0;
 };
 
 ///////////////////////////////
@@ -37,6 +48,8 @@ void consultaSaldo (Conta contas [], int qtd);
 void realizar_deposito(Conta contas[], int qtd);
 void realizar_saque(Conta contas[], int qtd);
 void transferir_valores(Conta contas[], int qtd);
+void registrar_transacao(Conta& conta, const char* tipo, float valor);
+void emitir_extrato(Conta contas[], int qtd);
 
 ////////////////////////////////////////////////////////
 
@@ -92,6 +105,7 @@ int main (){
                 break;
             case 9:
                 //Extrato 
+                emitir_extrato(contas, qtd);
                 break;
             case 10:
                 cout << "\n";
@@ -475,6 +489,7 @@ void realizar_deposito(Conta contas[], int qtd) {
             cout << "\n";
             cout << "--> Depósito de R$ " << valor << " realizado com sucesso!" << endl;
             cout << "--> Novo saldo: R$ " << contas[indiceConta].saldo << endl;
+            registrar_transacao(contas[indiceConta], "Depósito", valor);
             
             system("pause");
         }
@@ -537,6 +552,7 @@ void realizar_saque(Conta contas[], int qtd) {
             cout << "\n";
             cout << "--> Saque de R$ " << valor << " realizado com sucesso!" << endl;
             cout << "--> Novo saldo: R$ " << contas[indiceConta].saldo << endl;
+            registrar_transacao(contas[indiceConta], "Saque", -valor);
             system("pause");
         }
     }
@@ -619,11 +635,180 @@ void transferir_valores(Conta contas[], int qtd) {
             cout << "--> Transferência de R$ " << valor << " realizada com sucesso!" << endl;
             cout << "--> Novo saldo da conta de origem: R$ " << contas[indiceContaOrigem].saldo << endl;
             cout << "--> Novo saldo da conta de destino: R$ " << contas[indiceContaDestino].saldo << endl;
-            
+            registrar_transacao(contas[indiceContaOrigem], "Transferência Enviada", -valor);
+		    registrar_transacao(contas[indiceContaDestino], "Transferência Recebida", valor);
 		
 			system("pause");
         }
     }
 }
 
+void emitir_extrato(Conta contas[], int qtd) {
+    system("cls");
+    system("color 7");
 
+    char conta[50];
+    char agencia[50];
+    int opcao;
+
+    cout << "\n";
+    cout << "------------------- EMITIR EXTRATO -------------------" << endl;
+    cout << "Escolha uma opção:" << endl;
+    cout << "1. Extrato em Tela" << endl;
+    cout << "2. Extrato em Arquivo (HTML)" << endl;
+    cout << "Opção: ";
+    cin >> opcao;
+
+    
+
+
+    switch (opcao) {
+    case 1: {
+        system("cls");
+        system("color 7");
+        
+        cout << "--> Digite o número da conta corrente: ";
+    	cin >> conta;
+    	cout << "--> Digite o número da agência: ";
+    	cin >> agencia;
+
+    	int indiceConta = Buscador(contas, qtd, 1, conta);
+    	int indiceAgencia = Buscador(contas, qtd, 2, agencia);
+
+    	if (indiceConta == -1 || indiceAgencia == -1) {
+        	cout << "Conta ou agência inválida." << endl;
+        	return;
+    	}
+        
+        cout << "---------------- DADOS DA CONTA ----------------" << endl;
+        cout << "Número da Conta: " << contas[indiceConta].num_conta << endl;
+        cout << "Número da Agência: " << contas[indiceAgencia].num_agencia << endl;
+        cout << "Nome do titular: " << contas[indiceConta].nome << endl;
+        cout << "CPF do titular: " << contas[indiceAgencia].CPF << endl;
+        cout << "Saldo atual: R$ " << contas[indiceConta].saldo << endl << endl;
+
+        cout << "-------------- EXTRATO DE MOVIMENTAÇÕES --------------" << endl;
+        for (int i = 0; i < contas[indiceConta].qtd_transacoes; ++i) {
+            cout << "Tipo: " << contas[indiceConta].extrato[i].tipo << endl;
+            cout << "Valor: R$ " << contas[indiceConta].extrato[i].valor << endl;
+            cout << "Saldo: R$ " << contas[indiceConta].extrato[i].saldo_momento << endl;
+            cout << "Data: " << contas[indiceConta].extrato[i].data << endl;
+            cout << "Hora: " << contas[indiceConta].extrato[i].hora << endl << endl;
+        }
+        break;
+    }
+    case 2: {
+    	
+    	cout << "--> Digite o número da conta corrente: ";
+    	cin >> conta;
+    	cout << "--> Digite o número da agência: ";
+    	cin >> agencia;
+
+    	int indiceConta = Buscador(contas, qtd, 1, conta);
+    	int indiceAgencia = Buscador(contas, qtd, 2, agencia);
+
+    	if (indiceConta == -1 || indiceAgencia == -1) {
+        	cout << "Conta ou agência inválida." << endl;
+        	return;
+    	}
+    	
+        ofstream arquivo("extrato_conta.html");
+            if (arquivo.is_open()) {
+                arquivo << "<html><head><title>Extrato da Conta</title>" << endl;
+				arquivo << "<link rel=\"stylesheet\" href=\"style.css\"> " << endl;
+				arquivo << "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">" << endl;
+				arquivo << "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>" << endl;
+				arquivo << "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap\" rel=\"stylesheet\"></head>" << endl;
+				arquivo << "<body><div class=\"container\"><main>" << endl;
+                arquivo << "<h1>Extrato bancário</h1>" << endl;
+                arquivo << "<section class=\"user-wrapper\">" << endl;
+                arquivo << "<img class=\"user-img\" src=\"./user.svg\" width=\"50\" height=\"50\" alt=\"icone de um usuário\">" << endl;
+                arquivo << "<div class=\"user-data\">" << endl;
+    			arquivo << "<p>Nome: <span>"<< contas[indiceConta].nome << "</span></p>" << endl;
+    			arquivo << "<p>Agência: <span>" << contas[indiceConta].num_conta << "<span></p>" << endl;
+    			arquivo << "<p>Conta: <span>"<< contas[indiceConta].num_conta << "</span></p>" << endl;
+    			arquivo << "<p>CPF: <span>"<< contas[indiceAgencia].CPF << "</span></p>" << endl;
+    			arquivo << "<p> Saldo: <span>" << contas[indiceConta].saldo << "</span></p>" << endl;
+    			arquivo << "</div>" << endl;
+    			arquivo << "</section>" << endl;
+                arquivo << "<h2>Histórico de Movimentações</h2>" << endl;
+                arquivo << "<section class=\"table-data\">" << endl;
+                arquivo << "<table>" << endl;
+                arquivo << "<thead>" << endl;
+                arquivo << "<tr>" << endl;
+                arquivo << "<th>Data</th>" << endl;
+                arquivo << "<th>Hora</th>" << endl;
+                arquivo << "<th>Lançamento</th>" << endl;
+                arquivo << "<th>Valor</th>" << endl;
+                arquivo << "<th>Saldo</th>" << endl;
+                arquivo << "</tr>" << endl;
+                arquivo << "</thead>" << endl;
+                arquivo << "<tbody>" << endl;
+
+            
+                for (int i = 0; i < contas[indiceConta].qtd_transacoes; i++) {
+                    arquivo << "<tr>" << endl;
+                    arquivo << "<td>" << contas[indiceConta].extrato[i].data << "</td>" << endl;
+                    arquivo << "<td>" << contas[indiceConta].extrato[i].hora << "</td>" << endl;
+                    arquivo << "<td><span class=\"";
+                    
+                    
+                    if (strcmp(contas[indiceConta].extrato[i].tipo, "Depósito") == 0) {
+                        arquivo << "deposit\">Depósito</span></td>" << endl;
+                    } else if (strcmp(contas[indiceConta].extrato[i].tipo, "Saque") == 0) {
+                        arquivo << "withdrawal\">Saque</span></td>" << endl;
+                    } else if (strcmp(contas[indiceConta].extrato[i].tipo, "Transferência") == 0) {
+                        arquivo << "withdrawal\">Transferência</span></td>" << endl;
+                    } else if ((strcmp(contas[indiceConta].extrato[i].tipo, "Transferência Enviada") == 0)) {
+                    	arquivo << "withdrawal\">Transferência enviada</span></td>" << endl;
+					} else if ((strcmp(contas[indiceConta].extrato[i].tipo, "Transferência Recebida") == 0)) {
+                    	arquivo << "deposit\">Transferência recebida</span></td>" << endl;
+					}
+					
+					else {
+                        arquivo << "\">" << contas[indiceConta].extrato[i].tipo << "</span></td>" << endl;
+                    }
+
+                    arquivo << "<td>R$ " << contas[indiceConta].extrato[i].valor << "</td>" << endl;
+                    arquivo << "<td>R$ " << contas[indiceConta].extrato[i].saldo_momento << "</td>" << endl;
+                    arquivo << "</tr>" << endl;
+                }
+
+                arquivo << "</tbody>" << endl;
+                arquivo << "</table>" << endl;
+                arquivo << "</section>" << endl;
+                arquivo << "</main></div></body></html>" << endl;
+                arquivo.close();
+
+                cout << "\n\nExtrato salvo em extrato_conta.html" << endl;
+            } else {
+                cout << "\nErro ao criar o arquivo." << endl;
+            }
+            break;
+        }
+    	default: {
+       		cout << "Opção inválida." << endl;
+        break;
+    	}
+	}
+    
+    system("pause");
+}
+
+
+void registrar_transacao(Conta& conta, const char* tipo, float valor) {
+   
+
+    Transacao nova_transacao;
+    strcpy(nova_transacao.tipo, tipo);
+    nova_transacao.valor = valor;
+
+   float saldo_momento = conta.saldo;
+   
+    time_t agora = time(0); 
+    strftime(nova_transacao.data, sizeof(nova_transacao.data), "%d/%m/%Y", localtime(&agora)); 
+	strftime(nova_transacao.hora, sizeof(nova_transacao.hora), "%H:%M", localtime(&agora)); 
+    nova_transacao.saldo_momento = saldo_momento;
+
+    conta.extrato[conta.qtd_transacoes++] = nova_transacao;
+}

@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <locale>
 #include <fstream>
@@ -35,21 +36,145 @@ struct Conta {
 /// Protótipos ///       
 /////////////////////////
 
+/**
+ * Função que exibe o menu principal do sistema.
+ * 
+ * @param opcao Referência para a variável que armazena a opção escolhida pelo usuário.
+ */
 void menu (int &opcao);
+
+/**
+ * Função que busca uma conta corrente no vetor de contas.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ * @param escolha Opção de busca (1 = Número da Conta, 2 = Número da Agência, 3 = Nome, 4 = CPF).
+ * @param busca Valor a ser buscado.
+ * @return Índice da conta encontrada ou -1 se não encontrada.
+ */
 int Buscador (Conta contas [], int qtd, int escolha, char busca []);
+
+/**
+ * Função que cadastra uma nova conta corrente.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Referência para a quantidade de contas correntes no vetor.
+ */
 void cadastrar_conta (Conta contas [], int &qtd);
+
+/**
+ * Função que salva os dados das contas correntes em um arquivo binário.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ * @return 0 em caso de erro na criação do arquivo, 1 caso contrário.
+ */
 int salvaDados (Conta contas [],int qtd);
+
+/**
+ * Função que lê os dados das contas correntes de um arquivo binário.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Referência para a quantidade de contas correntes no vetor.
+ */
 void LeDados (Conta contas [], int &qtd);
+
+/**
+ * Função que altera os dados de uma conta corrente.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ */
 void alterar_conta ( Conta contas[],int qtd );
+
+/**
+ * Função que exclui uma conta corrente.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Referência para a quantidade de contas correntes no vetor.
+ */
 void excluir_conta (Conta contas [],int &qtd);
-void mostra_contas (Conta contas [],int qtd);
+
+/**
+ * Função que exibe todas as contas correntes e seus saldos.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ */
 void mostraTodas (Conta contas [],int qtd);
+
+/**
+ * Função que consulta o saldo de uma conta corrente.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ */
 void consultaSaldo (Conta contas [], int qtd);
+
+/**
+ * Função que realiza um depósito em uma conta corrente.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ */
 void realizar_deposito(Conta contas[], int qtd);
+
+/**
+ * Função que realiza um saque em uma conta corrente.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ */
 void realizar_saque(Conta contas[], int qtd);
+
+/**
+ * Função que transfere valores entre duas contas correntes.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ */
 void transferir_valores(Conta contas[], int qtd);
+
+/**
+ * Função que registra uma transação em uma conta corrente.
+ * 
+ * @param conta Referência para a conta corrente.
+ * @param tipo Tipo da transação.
+ * @param valor Valor da transação.
+ */
 void registrar_transacao(Conta& conta, const char* tipo, float valor);
+
+/**
+ * Função que emite o extrato de uma conta corrente.
+ * 
+ * @param contas Vetor de contas correntes.
+ * @param qtd Quantidade de contas correntes no vetor.
+ */
 void emitir_extrato(Conta contas[], int qtd);
+
+/**
+ * Função que verifica se um CPF é válido.
+ * 
+ * @param cpf CPF a ser verificado.
+ * @return true se o CPF é válido, false caso contrário.
+ */
+bool cpfValido(char cpf[11]);
+
+/**
+ * Função que verifica se um nome é válido.
+ * 
+ * @param nome Nome a ser verificado.
+ * @return true se o nome é válido, false caso contrário.
+ */
+bool validaNome(char nome[]);
+
+/**
+ * Função que verifica se um número é válido.
+ * 
+ * @param numero Número a ser verificado.
+ * @return true se o número é válido, false caso contrário.
+ */
+bool validaNumero(char numero[]);
 
 ////////////////////////////////////////////////////////
 
@@ -151,13 +276,13 @@ void menu (int &opcao){
     cout << "| 7.)\t Transeferir valores" << endl;
     cout << "| 8.)\t Mostrar todas as contas e saldos" << endl;
     cout << "| 9.)\t Emitir extrato de conta " << endl;
-    cout << "| 10.)\t Desenvolvedor" << endl;
-    cout << "| 11.)\t Sair" << endl;
+    cout << "| 10.)\t Sair" << endl;
     cout << "----------------------------------------------- \n"<< endl << endl;
     cout << "------> Escolha uma opção: " ;
     cin >> opcao;
 
 }
+
 // --------------------
 // Usada constantemente
 // ---------------------
@@ -218,15 +343,43 @@ void cadastrar_conta (Conta contas [], int &qtd){
 
     cout << "- Insira o numero da conta: ";
     cin >> c.num_conta;
+    if (!validaNumero(c.num_conta)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "\n";
     cout << "- Insira o número da agência: ";
     cin >> c.num_agencia;
+    if (!validaNumero(c.num_agencia)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "\n";
     cout << "- Insira o nome do titular: ";
     cin >> c.nome;
+    if (!validaNome(c.nome)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Nome inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "\n";
     cout << "- insira o CPF do titular: ";
     cin >> c.CPF;
+    if (!cpfValido(c.CPF)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "CPF inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "\n";
     cout << "- Qual é o saldo inicial ? ";
     cin >> c.saldo;
@@ -297,8 +450,22 @@ void alterar_conta ( Conta contas[],int qtd){
     
     cout << "Insira um Número de Conta Corrente: ";
     cin >> conta;
+    if (!validaNumero(conta)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "Insira a Agência da Conta Corrente:";
     cin >> agencia;
+    if (!validaNumero(agencia)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
    
     int BuscaConta = Buscador (contas,qtd,1,conta);
     int BuscaAgencia = Buscador (contas,qtd,2,agencia);
@@ -340,9 +507,23 @@ void excluir_conta (Conta contas [],int &qtd){
     char agencia [50];
     
     cout << "Insira um Número de Conta Corrente: ";
+    if (!validaNumero(conta)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cin >> conta;
     cout << "\n";
     cout << "Insira a Agência da Conta Corrente: ";
+    if (!validaNumero(agencia)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cin >> agencia;
 
     int BuscaConta = Buscador (contas,qtd,1,conta);
@@ -403,9 +584,22 @@ void consultaSaldo (Conta contas [], int qtd){
      
     cout << "--> Digite o número da conta corrente: ";
     cin >> conta;
+    if (!validaNumero(conta)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "--> Digite o número da agência:  ";
     cin >> agencia;
-    
+    if (!validaNumero(agencia)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }  
     int BuscaConta = Buscador (contas,qtd,1,conta);
     int BuscaAgencia = Buscador (contas,qtd,2,agencia);
 
@@ -452,8 +646,22 @@ void realizar_deposito(Conta contas[], int qtd) {
 
     cout << "--> Digite o número da conta corrente: ";
     cin >> conta;
+    if (!validaNumero(conta)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "--> Digite o número da agência: ";
     cin >> agencia;
+    if (!validaNumero(agencia)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
 
     int indiceConta = Buscador(contas, qtd, 1, conta);
     int indiceAgencia = Buscador(contas, qtd, 2, agencia);
@@ -510,8 +718,22 @@ void realizar_saque(Conta contas[], int qtd) {
 
     cout << "--> Digite o número da conta corrente: ";
     cin >> conta;
+    if (!validaNumero(conta)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "--> Digite o número da agência: ";
     cin >> agencia;
+    if (!validaNumero(agencia)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
 
     int indiceConta = Buscador(contas, qtd, 1, conta);
     int indiceAgencia = Buscador(contas, qtd, 2, agencia);
@@ -574,8 +796,22 @@ void transferir_valores(Conta contas[], int qtd) {
 
     cout << "--> Digite o número da conta de origem: ";
     cin >> contaOrigem;
+    if (!validaNumero(contaOrigem)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "--> Digite o número da agência de origem: ";
     cin >> agenciaOrigem;
+    if (!validaNumero(agenciaOrigem)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
 
     int indiceContaOrigem = Buscador(contas, qtd, 1, contaOrigem);
     int indiceAgenciaOrigem = Buscador(contas, qtd, 2, agenciaOrigem);
@@ -583,8 +819,22 @@ void transferir_valores(Conta contas[], int qtd) {
    
     cout << "--> Digite o número da conta de destino: ";
     cin >> contaDestino;
+    if (!validaNumero(contaDestino)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
     cout << "--> Digite o número da agência de destino: ";
     cin >> agenciaDestino;
+    if (!validaNumero(agenciaDestino)) {
+        cout << "\n";
+        cout << system ("color 4");
+        cout << "Número inválido!" << endl;
+        system ("pause");
+        return;
+    }
 
     int indiceContaDestino = Buscador(contas, qtd, 1, contaDestino);
     int indiceAgenciaDestino = Buscador(contas, qtd, 2, agenciaDestino);
@@ -669,8 +919,22 @@ void emitir_extrato(Conta contas[], int qtd) {
         
         cout << "--> Digite o número da conta corrente: ";
     	cin >> conta;
+        if (!validaNumero(conta)) {
+            cout << "\n";
+            cout << system ("color 4");
+            cout << "Número inválido!" << endl;
+            system ("pause");
+            return;
+        }
     	cout << "--> Digite o número da agência: ";
     	cin >> agencia;
+        if (!validaNumero(agencia)) {
+            cout << "\n";
+            cout << system ("color 4");
+            cout << "Número inválido!" << endl;
+            system ("pause");
+            return;
+        }
 
     	int indiceConta = Buscador(contas, qtd, 1, conta);
     	int indiceAgencia = Buscador(contas, qtd, 2, agencia);
@@ -811,4 +1075,54 @@ void registrar_transacao(Conta& conta, const char* tipo, float valor) {
     nova_transacao.saldo_momento = saldo_momento;
 
     conta.extrato[conta.qtd_transacoes++] = nova_transacao;
+}
+bool cpfValido(char cpf[11]) {
+    int i, j, digit, d1, d2;
+    char temp[11];
+
+    for (i = 0; i < 11; i++) {
+        if (!isdigit(cpf[i])) {
+            return false;
+        }
+        temp[i] = cpf[i] - '0';
+    }
+
+    for (i = 0, j = 10, d1 = 0; i < 9; i++, j--) {
+        d1 += temp[i] * j;
+    }
+    d1 = 11 - (d1 % 11);
+    if (d1 > 9) d1 = 0;
+
+    for (i = 0, j = 11, d2 = 0; i < 10; i++, j--) {
+        d2 += temp[i] * j;
+    }
+    d2 = 11 - (d2 % 11);
+    if (d2 > 9) d2 = 0;
+
+    return d1 == temp[9] && d2 == temp[10];
+}
+
+bool validaNome(char nome[]) {
+    int len = strlen(nome);
+    if (len < 3) {
+        return false;
+    }
+
+    for(int i = 0; i < len; i++) {
+        if (!isalpha(nome[i]) && nome[i] != ' ') {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool validaNumero(char numero[]) {
+    for(int i = 0; i < strlen(numero); i++) {
+        if (!isdigit(numero[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }

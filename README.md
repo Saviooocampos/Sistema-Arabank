@@ -31,7 +31,7 @@ Lê os dados das contas correntes de um arquivo binário.
 
 Altera os dados de uma conta corrente.
 
-#`void excluir_conta (Conta contas [],int &qtd)`
+`void excluir_conta (Conta contas [],int &qtd)`
 
 Exclui uma conta corrente.
 

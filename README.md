@@ -5,6 +5,9 @@
 Programa para gerenciar contas correntes em um banco.
 Este programa permite cadastrar, alterar, excluir, consultar saldo, realizar depósito, realizar saque, transferir valores, emitir extrato e mostrar todas as contas correntes de um banco. Os dados das contas são armazenados em um arquivo binário para persistência. O programa utiliza structs para representar as contas correntes e as transações realizadas.
 
+## Preview
+![Fotografia do terminal do programa em execução](./img/preview.png)
+
 ## Funções
 
 `void menu (int &opcao)`
